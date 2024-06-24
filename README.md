@@ -19,6 +19,16 @@ Initial rest APIs
 
 /job/download (changes due to variant & inpainting generation)
 
+
+# _Beta v1.1.1_
+
+/job/process (Added skipFBX parameter)
+
+
+# _Beta v1.2.0_
+
+/job/process (Added merging parameter)
+
 The SayMotion REST API lets you convert text prompts into 3D animations without having to use the Saymotion [Web Portal](https://saymotion.ai/). It can be used from web, mobile or desktop apps.
 
 
@@ -225,35 +235,49 @@ For the **text2motion **processor, here are the parameters for a regular job.
 
  "model=&lt;value>”,
 
- "requestedAnimationDuration=&lt;value>”,
-
  “dis=&lt;value>”,
 
  “footLockingMode=&lt;value>”,
 
 “poseFilteringStrength=&lt;value>”,
 
-“rootAtOrigin=&lt;value>”
+“rootAtOrigin=&lt;value>”,
+
+“skipFBX=&lt;value>”
 
  ]
 
-And here are the additional parameters for an inpainting job
+And here are the common parameters for an inpainting or merging job
 
-"params":
+ ‘t2m_rid=&lt;value>’
 
- [
+ ‘variant_id=&lt;value>’
 
- “t2m_rid=&lt;value>”,
+‘editRequest={"numTrimLeft" : &lt;value>, "numTrimRight" : &lt;value>}’
 
- “variant_id=&lt;value>”,
+Inpainting exclusive parameter:
 
- “inPaintingRequest={ “prompt” :&lt;value>,  “intervals” : [ { “start” :&lt;value>, “end”:&lt;value> } ] }”
+ ‘inPaintingRequest={ “prompt” :&lt;value>,  “intervals” : [ { “start” :&lt;value>, “end”:&lt;value> } ] }’
 
- ]
+Merging exclusive parameter::
+
+‘mergingRequest={
+
+ “t2m_rid”:&lt;value>,
+
+ “variant_id”:&lt;value>,
+
+“editRequest”:{"numTrimLeft" : &lt;value>, "numTrimRight" : &lt;value>},
+
+“prompt”: &lt;value>,
+
+“blendDuration”: &lt;value>
+
+ }’
 
 **prompt**
 
-A detailed text prompt to generate motion with. For inpainting jobs, the prompt parameter should be included inside the inPaintingRequest parameter, instead of as a standalone parameter in a regular job.
+A detailed text prompt to generate motion with. For inpainting or merging  jobs, the prompt parameter should be included inside the inPaintingRequest or mergingRequest parameter, instead of as a standalone parameter in a regular job.
 
 **model**
 
@@ -287,17 +311,17 @@ This parameter influences motion generation to improve it in some cases like int
 * Place a root joint at the origin of the output character. This is helpful in some cases, for example, for UE4 retargeting.
 * Default value is 0 and value can be either 0 or 1
 
-**requestedAnimationDuration (optional)**
+**skipFBX (optional)**
 
 
 
-* Float, request animation generation duration in seconds
+* Skips FBX format generation. Set skipFBX=1
 
 **t2m_rid**
 
 
 
-* It is a previous text2motion job request id from which to generate inpainting jobs
+* It is a previous text2motion job request id from which to generate inpainting/merging jobs
 
 **variant_id**
 
@@ -305,11 +329,25 @@ This parameter influences motion generation to improve it in some cases like int
 
 * It is a specific variant animation id from the above previously generated text2motion job
 
+**blendDuration : **duration of the merge prompt generated frames
+
+**editRequest**
+
+
+
+* A json string, containing simple edit requests to the inpainting/merging region such as trimming it from left (integer value) or right (integer value). The values represent frame counts and are always positive. 
+
 **inPaintingRequest**
 
 
 
 * A json string, containing inpainting prompt and intervals in frame numbers.
+
+**mergingRequest**
+
+
+
+* A json string, contains merging related information such as the id & variant id of the to be merged animation job.
 
 For the **render **processor, here are the parameters.
 
